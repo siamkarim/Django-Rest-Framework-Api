@@ -8,6 +8,17 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
+from rest_framework import generics
+
+
+class Api_List(generics.ListCreateAPIView):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+
+
+class Api_Detail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
 
 @api_view(['GET', 'POST'])
 def Api_list(request):
