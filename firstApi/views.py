@@ -1,35 +1,22 @@
 from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from firstApi.serializers import ContactSerializer
-from rest_framework import viewsets
-from rest_framework.response import Response
-from firstApi.models import Contact
-from rest_framework import status
+import datetime
+import requests
 
-class ContactViewSet(viewsets.ViewSet):
-    
-    def list(self, request):
-        queryset = Contact.objects.all()
-        serializer = ContactSerializer(queryset, many=True)
-        return Response(serializer.data)
+def index(request):
+    if 'city' in request.POST:
+            city = request.POST['city']
+    else: 
+        city = 'Mymensingh'
+    appid = 'acc16ad8215cbbd2411a66a13d357f9c'
+    URL = 'https://api.openweathermap.org/data/2.5/weather'
 
-    def retrieve(self, request, pk=None):
-        queryset = Contact.objects.all()
-        contact = get_object_or_404(queryset, pk=pk)
-        serializer = ContactSerializer(contact)
-        return Response(serializer.data)
+    PARAMS = {'q': city, 'appid': appid, 'units': 'metric'}
 
-    def create(self, request):
-
-        serializer = ContactSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-
-    def update(self, request, pk=None):
-        contact = Contact.objects.get(pk=pk)
-        serializer = ContactSerializer(contact, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)    
+    r = requests.get(url=URL, params=PARAMS)
+    res = r.json()
+    description = res['weather'][0]['description']
+    icon = res['weather'][0]['icon']
+    temp = res['main']['temp']
+    day = datetime.date.today()
+    return render(request ,'weatherapp/index.html',{'description': description,
+    'icon': icon, 'temp': temp, 'day': day, 'city': city }) 
