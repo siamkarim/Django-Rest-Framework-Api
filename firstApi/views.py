@@ -10,13 +10,14 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 class gnaric_List(generics.ListCreateAPIView,):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
 
@@ -24,7 +25,8 @@ class gnaric_List(generics.ListCreateAPIView,):
 
 
 class gnaric_Detail(generics.RetrieveUpdateDestroyAPIView,):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
  
     queryset = Contact.objects.all()
