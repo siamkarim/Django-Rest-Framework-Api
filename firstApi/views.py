@@ -12,6 +12,14 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.reverse import reverse
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'contact': reverse('contact-list', request=request, format=format),
+    })
 
 class gnaric_List(generics.ListCreateAPIView,):
     queryset = Contact.objects.all()

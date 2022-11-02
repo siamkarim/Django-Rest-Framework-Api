@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from .models import Contact
 
-class ContactSerializer(serializers.ModelSerializer):
+class ContactSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = Contact
-        fields = ['name', 'department', 'email']
+        fields = ['url','name', 'department', 'email','owner']
   
