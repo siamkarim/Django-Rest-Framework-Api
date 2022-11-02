@@ -6,29 +6,53 @@ from firstApi.serializers import ContactSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-
+from django.http import Http404
+from rest_framework.views import APIView
+from rest_framework import mixins
 from rest_framework import generics
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+class gnaric_List(generics.ListCreateAPIView,):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
-class Api_List(generics.ListCreateAPIView):
+  
+
+
+class gnaric_Detail(generics.RetrieveUpdateDestroyAPIView,):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+ 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
 
-class Api_Detail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Contact.objects.all()
-    serializer_class = ContactSerializer
 
-@api_view(['GET', 'POST'])
-def Api_list(request):
-   
-    if request.method == 'GET':
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Blog_List(APIView):
+  
+    def get(self, request, format=None):
         snippets = Contact.objects.all()
         serializer = ContactSerializer(snippets, many=True)
         return Response(serializer.data)
 
-    elif request.method == 'POST':
+    def post(self, request, format=None):
         serializer = ContactSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -36,25 +60,30 @@ def Api_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def Api_detail(request, pk):
-    
-    try:
-        snippet = Contact.objects.get(pk=pk)
-    except Contact.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        serializer =ContactSerializer(snippet)
+class Blog_Detail(APIView):
+   
+    def get_object(self, pk):
+        try:
+            return  Contact.objects.get(pk=pk)
+        except  Contact.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer =  ContactSerializer(snippet)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
-        serializer = ContactSerializer(snippet, data=request.data)
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer =  ContactSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
         snippet.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

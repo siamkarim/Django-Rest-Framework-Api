@@ -2,8 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('api/', views.Api_list),
-    path('detail/<int:pk>/', views.Api_detail),
-    path('snip/', views.Api_List.as_view()),
-    path('snips/<int:pk>/', views.Api_Detail.as_view()),
-]
+
+    path('snip/', views.Blog_List.as_view()),
+    path('snips/<int:pk>/', views.Blog_Detail.as_view()),
+    path('gapi/', views.gnaric_List.as_view()),
+    path('gdapi/<int:pk>/', views.gnaric_Detail.as_view()),
+] 
